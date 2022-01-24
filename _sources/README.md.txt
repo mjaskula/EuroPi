@@ -50,4 +50,4 @@ $ cd docs
 $ pip-compile requirements.in
 ```
 
-Both the ``requiremtents.in`` and the generated ``requirements.txt`` files should be committed.
+Both the ``requirements.in`` and the generated ``requirements.txt`` files should be committed.
