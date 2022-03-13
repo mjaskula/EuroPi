@@ -1,7 +1,7 @@
 from random import choice
 from time import sleep
 
-from europi import OLED_HEIGHT, OLED_WIDTH, k1, k2, oled, MAX_OUTPUT_VOLTAGE
+from europi import MAX_OUTPUT_VOLTAGE, OLED_HEIGHT, OLED_WIDTH, cv1, cv2, cv3, cv4, cv5, cv6, k1, k2, oled
 from europi_script import EuroPiScript
 
 MAX_SCORE = int(MAX_OUTPUT_VOLTAGE)
@@ -31,22 +31,27 @@ class Ball:
         self.start_x = int(OLED_WIDTH / 2)
         self.start_y = int(OLED_HEIGHT / 2)
         self.reset()
+        self.bounce_trigger = False
 
     def reset(self):
         self.x = self.start_x
         self.y = self.start_y
         self.x_dir = choice([-2, -1, 1, 2])
         self.y_dir = choice([-2, -1, 0, 1, 2])
+        self.bounce_trigger = False
 
     def tick(self):
+        self.bounce_trigger = False
         self.x = self.x + self.x_dir
         self.y = self.y + self.y_dir
 
         if self.y < 0 or self.y > OLED_HEIGHT - 1:
             self.y_dir = -(self.y_dir)
+            self.bounce_trigger = True
 
         if self.x < 0 or self.x > OLED_WIDTH - 1:
             self.x_dir = -(self.x_dir)
+            self.bounce_trigger = True
 
     def draw(self, oled):
         oled.rect(self.x, self.y, 2, 2, 1)
@@ -57,12 +62,15 @@ class Score:
         self.l = 0
         self.r = 0
         self.x = int(OLED_WIDTH / 2) - 12
+        self.score_trigger = False
 
     def score_l(self):
         self.l += 1
+        self.score_trigger = True
 
     def score_r(self):
         self.r += 1
+        self.score_trigger = True
 
     def draw(self, oled):
         oled.text(f"{self.l} {self.r}", self.x, 0, 1)
@@ -97,6 +105,7 @@ class Pong(EuroPiScript):
             ball.draw(oled)
             l_paddle.draw(oled)
             r_paddle.draw(oled)
+            score.score_trigger = False
             score.draw(oled)
             self.draw_center_line(oled)
 
@@ -112,11 +121,15 @@ class Pong(EuroPiScript):
 
             if score.game_over():
                 ball.reset()
-
-            # update CV output
-
             oled.show()
 
+            # update CV output
+            cv1.value(ball.bounce_trigger)
+            cv2.voltage(ball.x)
+            cv3.value(score.score_trigger)
+            cv4.voltage(score.l)
+            cv5.voltage(ball.y)
+            cv6.voltage(score.r)
 
 if __name__ == "__main__":
     Pong().main()
