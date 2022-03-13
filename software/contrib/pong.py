@@ -1,12 +1,14 @@
 from random import choice
 from time import sleep
 
-from europi import MAX_OUTPUT_VOLTAGE, OLED_HEIGHT, OLED_WIDTH, cv1, cv2, cv3, cv4, cv5, cv6, k1, k2, oled
+from europi import MAX_OUTPUT_VOLTAGE, OLED_HEIGHT, OLED_WIDTH, cv1, cv2, cv3, cv4, cv5, cv6, k1, k2, din, oled
 from europi_script import EuroPiScript
 
 MAX_SCORE = int(MAX_OUTPUT_VOLTAGE)
 PADDLE_HEIGHT = 8
 
+def scale(value, istart, istop, ostart, ostop):
+  return ostart + (ostop - ostart) * ((value - istart) / (istop - istart))
 
 class Paddle:
     def __init__(self, knob, x_pos, height) -> None:
@@ -86,6 +88,11 @@ class Score:
 class Pong(EuroPiScript):
     def __init__(self):
         super().__init__()
+        self.tick = False
+
+        @din.handler
+        def clock_tick():
+            self.tick = True
 
     def draw_center_line(self, oled):
         x = int(OLED_WIDTH / 2)
@@ -101,7 +108,10 @@ class Pong(EuroPiScript):
         while True:
             # update game state
             oled.fill(0)
-            ball.tick()
+
+            if self.tick:
+                ball.tick()
+                self.tick = False
             ball.draw(oled)
             l_paddle.draw(oled)
             r_paddle.draw(oled)
@@ -125,10 +135,10 @@ class Pong(EuroPiScript):
 
             # update CV output
             cv1.value(ball.bounce_trigger)
-            cv2.voltage(ball.x)
+            cv2.voltage(scale(ball.x, 0, OLED_WIDTH, 0, MAX_OUTPUT_VOLTAGE))
             cv3.value(score.score_trigger)
             cv4.voltage(score.l)
-            cv5.voltage(ball.y)
+            cv5.voltage(scale(ball.y, 0, OLED_HEIGHT, 0, MAX_OUTPUT_VOLTAGE))
             cv6.voltage(score.r)
 
 if __name__ == "__main__":
