@@ -70,6 +70,7 @@ MAX_OUTPUT_VOLTAGE = 10
 # Default font is 8x8 pixel monospaced font.
 CHAR_WIDTH = 8
 CHAR_HEIGHT = 8
+MAX_CHARACTERS = OLED_WIDTH // CHAR_WIDTH
 
 # Digital input and output binary values.
 HIGH = 1
@@ -463,6 +464,11 @@ class Display(SSD1306_I2C):
             y_offset = int((index * 9) + padding_top) - 1
             self.text(content, x_offset, y_offset)
         self.show()
+
+    def inverted_text(self, s, x, y):
+        """displays the given text with an inverted background"""
+        oled.fill_rect(x, y - 1, CHAR_WIDTH * len(s), CHAR_HEIGHT + 2, 1)
+        oled.text(s, x, y, 0)
 
 
 class Output:
