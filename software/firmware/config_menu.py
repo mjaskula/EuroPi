@@ -22,6 +22,7 @@ class ConfigMenu(EuroPiScript):
         self.script_choice = None
         self.config_point_choice = None
         self.exit_requested = False
+        self.write_requested = False
 
         europi.b1.handler_falling(self.back)
 
@@ -78,27 +79,40 @@ class ConfigMenu(EuroPiScript):
                     old_selected = sub_menu.selected
                     sub_menu.draw_menu()
             if self.config_point_choice:
-                self.display_config_point(config_points.points[self.config_point_choice], config)
-            self.config_point_choice = None
+                self.edit_config_point(cls, config_points.points[self.config_point_choice], config)
+                sub_menu.init_handlers()
+                self.config_point_choice = None
         self.exit_requested = False
 
-    def display_config_point(self, config_point, config):
-        if config_point["type"] == "choice":
-            self.display_config_point_choice(config_point, config)
+    def edit_config_point(self, cls, config_point, config):
+        def request_write():
+            self.write_requested = True
 
-    def display_config_point_choice(self, config_point, config):
+        europi.b2.handler_falling(request_write)
+
+        if config_point["type"] == "choice":
+            self.edit_config_point_choice(cls, config_point, config)
+
+    def edit_config_point_choice(self, cls, config_point, config):
         print("enter choice")
+
         while not self.exit_requested:
             europi.oled.fill(0)
             europi.oled.text(f"{config_point['name']}:", 2, 3, 1)
-            europi.oled.inverted_text(
-                f"{config[config_point['name']]: >{europi.MAX_CHARACTERS}}", 0, 13
-            )
+            if self.write_requested:
+                europi.oled.inverted_text(f"{'writing...': ^{europi.MAX_CHARACTERS}}", 0, 13)
+            else:
+                europi.oled.inverted_text(
+                    f"{config[config_point['name']]: >{europi.MAX_CHARACTERS}}", 0, 13
+                )
             europi.oled.text(
                 f"{europi.k2.choice(config_point['choices']): >{europi.MAX_CHARACTERS}}", 0, 23, 1
             )
             europi.oled.show()
-            time.sleep(0.1)
+            if self.write_requested:
+                config[config_point["name"]] = europi.k2.choice(config_point["choices"])
+                cls._save_config(config)
+                self.write_requested = False
 
         self.exit_requested = False
 
