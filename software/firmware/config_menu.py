@@ -37,15 +37,12 @@ class ConfigMenu(EuroPiScript):
 
     def select_config_point(self, selected_item):
         self.config_point_choice = selected_item
-        print(f"selected {selected_item}")
 
     def back(self):
         self.exit_requested = True
-        print("back")
 
     def main(self):
         # let the user make a selection
-        print("enter config menu")
         while True:
             old_selected = -1
             while not self.script_choice:
@@ -59,7 +56,6 @@ class ConfigMenu(EuroPiScript):
             self.script_choice = None
 
     def script_config_menu(self, script_choice):
-        print("enter script menu")
         cls = self.scripts_config[script_choice]
         config_points = cls._build_config_points()
         config = cls._load_config()
@@ -93,16 +89,20 @@ class ConfigMenu(EuroPiScript):
         if config_point["type"] == "choice":
             self.edit_config_point_choice(cls, config_point, config)
 
+    def inverted_text(self, s, x, y):
+        """displays the given text with an inverted background"""
+        europi.oled.fill_rect(x, y - 1, europi.CHAR_WIDTH * len(s), europi.CHAR_HEIGHT + 2, 1)
+        europi.oled.text(s, x, y, 0)
+
     def edit_config_point_choice(self, cls, config_point, config):
-        print("enter choice")
 
         while not self.exit_requested:
             europi.oled.fill(0)
             europi.oled.text(f"{config_point['name']}:", 2, 3, 1)
             if self.write_requested:
-                europi.oled.inverted_text(f"{'writing...': ^{europi.MAX_CHARACTERS}}", 0, 13)
+                self.inverted_text(f"{'writing...': ^{europi.MAX_CHARACTERS}}", 0, 13)
             else:
-                europi.oled.inverted_text(
+                self.inverted_text(
                     f"{config[config_point['name']]: >{europi.MAX_CHARACTERS}}", 0, 13
                 )
             europi.oled.text(
@@ -113,9 +113,3 @@ class ConfigMenu(EuroPiScript):
                 config[config_point["name"]] = europi.k2.choice(config_point["choices"])
                 cls._save_config(config)
                 self.write_requested = False
-
-        self.exit_requested = False
-
-
-if __name__ == "__main__":
-    ConfigMenu(CONFIG_CLASSES).main()

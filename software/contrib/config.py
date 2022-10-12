@@ -2,11 +2,13 @@
 
 from config_menu import ConfigMenu
 
+from europi_config import EuroPiConfig
+from contrib.diagnostic import Diagnostic
 from contrib.turing_machine import EuroPiTuringMachine
-from contrib.europi_config import EuroPiConfig
 
 # Scripts that are included in the config menu
 CONFIG_CLASSES = [
+    Diagnostic,
     EuroPiTuringMachine,
     EuroPiConfig,
 ]

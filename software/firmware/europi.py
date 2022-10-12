@@ -465,11 +465,6 @@ class Display(SSD1306_I2C):
             self.text(content, x_offset, y_offset)
         self.show()
 
-    def inverted_text(self, s, x, y):
-        """displays the given text with an inverted background"""
-        oled.fill_rect(x, y - 1, CHAR_WIDTH * len(s), CHAR_HEIGHT + 2, 1)
-        oled.text(s, x, y, 0)
-
 
 class Output:
     """A class for sending digital or analogue voltage to an output jack.
