@@ -115,3 +115,8 @@ class HelloWorld(EuroPiScript):
 
 For a simple, but complete example of a testable ``EuroPiScript`` see [hello_world.py](/software/contrib/hello_world.py)
 and its test [test_hello_world.py](/software/tests/contrib/test_hello_world.py).
+
+## Config Menu
+
+``EuroPiScripts`` can provide configuration points that can be edited in the Config script. See the
+[config menu documentation](/software/contrib/config.md) for details.

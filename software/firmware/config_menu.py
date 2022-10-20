@@ -8,7 +8,19 @@ from ui import Menu
 
 
 class ConfigMenu(EuroPiScript):
-    """"""
+    """A menu which allows the user to edit configuration parameters for both participating scripts
+    and global parameters. The menu will include any ``EuroPiScripts`` provided to it in the
+    constructor.
+
+    In the menu:
+
+    * **Button 1:** go back
+    * **Button 2:** choose the selected menu item, save the current config value
+    * **Knob 1:** unused
+    * **Knob 2:** change the current selection
+
+    :param config_classes: a list of Classes implementing EuroPiScript to be included in the menu
+    """
 
     def __init__(self, config_classes):
         self.scripts_config = ConfigMenu._build_scripts_config(config_classes)
