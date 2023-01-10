@@ -21,6 +21,7 @@ from contrib.harmonic_lfos import HarmonicLFOs
 from contrib.hello_world import HelloWorld
 from contrib.master_clock import MasterClock
 from contrib.noddy_holder import NoddyHolder
+from contrib.oscillator import Oscillator
 from contrib.piconacci import Piconacci
 from contrib.polyrhythmic_sequencer import PolyrhythmSeq
 from contrib.poly_square import PolySquare
@@ -44,6 +45,7 @@ EUROPI_SCRIPT_CLASSES = [
     HelloWorld,
     MasterClock,
     NoddyHolder,
+    Oscillator,
     Piconacci,
     PolyrhythmSeq,
     PolySquare,
